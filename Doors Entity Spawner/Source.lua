@@ -124,6 +124,7 @@ Spawner.createEntity = function(config)
                     OnEntityEnteredRoom = function() end,
                     OnLookAtEntity = function() end,
                     OnDeath = function() end
+                    SeeifCanKill = function() end
                 }
             }
 
@@ -245,8 +246,10 @@ Spawner.runEntity = function(entityTable)
 
                 -- Kill player
 
-                if entityTable.Config.CanKill and not Char:GetAttribute("IsDead") and not Char:GetAttribute("Invincible") and not Char:GetAttribute("Hiding") and (getPlayerRoot().Position - entityModel.PrimaryPart.Position).Magnitude <= entityTable.Config.KillRange then
-                    task.spawn(function()
+                if entityTable.Config.CanKill and not Char:GetAttribute("IsDead") and (getPlayerRoot().Position - entityModel.PrimaryPart.Position).Magnitude <= entityTable.Config.KillRange then
+                 task.spawn(entityTable.Debug.SeeifCanKill,Char:GetAttribute("Invincible"), Char:GetAttribute("Hiding"))
+                        if not Char:GetAttribute("Invincible") and not Char:GetAttribute("Hiding") then
+                        task.spawn(function()
                         Char:SetAttribute("IsDead", true)
 
                         -- Mute entity
@@ -296,6 +299,7 @@ Spawner.runEntity = function(entityTable)
                 end
             end
         end
+                end
     end)
 
     task.spawn(entityTable.Debug.OnEntityStartMoving)
